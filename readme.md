@@ -1,6 +1,6 @@
 ![enhance-type](https://user-images.githubusercontent.com/76308/223593101-1f65f07f-49c4-4a13-9203-4ab4ff72f097.svg)
 
-## [`@enhance/enhance-starter-project`](https://www.npmjs.com/package/@enhance/plugin-typescript)
+## [`@enhance/enhance-plugin-typescript`](https://www.npmjs.com/package/@enhance/plugin-typescript)
 
 > TypeScript support and workflow integration for Enhance
 
