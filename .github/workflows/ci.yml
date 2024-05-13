@@ -1,6 +1,6 @@
 name: Node CI
 
-# Push tests pushes; PR tests merges
+# Push tests commits; pull_request tests PR merges
 on: [ push, pull_request ]
 
 defaults:
@@ -8,86 +8,64 @@ defaults:
     shell: bash
 
 jobs:
-  # Run tests on PR branches
-  build_prs:
-    name: Run tests on PR branch
-    if: github.ref != 'refs/heads/main' || github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
 
+  test:
+    # Setup
+    runs-on: ubuntu-latest
+    # Go
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
-
-      - name: Install
-        run: npm install
-
-      - name: Typescript compile
-        run: tsc
-
-      - name: Run tests
-        run: npm run test
-
-  # Deploy the build
-  deploy_staging:
-    name: Deploy staging
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push' # Don't run twice for PRs (for now)
-    runs-on: ubuntu-latest
-    concurrency:
-      group: staging_${{ github.repository }}
-
-    steps:
-      - name: Check out repo
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-
-      - name: Install
-        run: npm install
-
-      - name: Typescript compile
-        run: tsc
-
-      - name: Run tests
-        run: npm run test
-
-      - name: Deploy to staging
-        uses: beginner-corp/actions/deploy@main
         with:
-          begin_token: ${{ secrets.BEGIN_TOKEN }}
-          begin_env_name: staging
-          channel: 'main'
+          registry-url: https://registry.npmjs.org/
 
-  # Deploy the build
-  deploy_production:
-    name: Deploy production
-    if: startsWith(github.ref, 'refs/tags/v') && github.event_name == 'push' # Don't run twice for PRs (for now)
+      - name: Install
+        run: npm ci
+
+      - name: Run Tests
+        run: npm test
+        env:
+          CI: true
+
+  # ----- Only git tag testing + package publishing beyond this point ----- #
+
+  # Publish to package registries
+  publish:
+    # Setup
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
-    concurrency:
-      group: production_${{ github.repository }}
 
+    # Go
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
+        with:
+          registry-url: https://registry.npmjs.org/
 
       - name: Install
-        run: npm install
+        run: npm ci
 
-      - name: Typescript compile
-        run: tsc
+      - name: Run Tests
+        run: npm test
+        env:
+          CI: true
 
-      - name: Run tests
-        run: npm run test
+      # Publish to npm
+      - name: Publish @RC to npm
+        if: contains(github.ref, 'RC')
+        run: npm publish --tag RC --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Deploy to production
-        uses: beginner-corp/actions/deploy@main
-        with:
-          begin_token: ${{ secrets.BEGIN_TOKEN }}
-          begin_env_name: production
-          channel: 'main'
+      - name: Publish @latest to npm
+        if: contains(github.ref, 'RC') == false #'!contains()'' doesn't work lol
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
