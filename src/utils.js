@@ -5,7 +5,7 @@ const SRC_DIR = 'ts'
 const DEST_DIR = 'app'
 
 function copyAllFiles () {
-  const files = globSync('ts/**/*', { 'ignore': [ 'ts/**/*.mts', 'ts/**/*.ts', 'ts/**/*.tsx' ] })
+  const files = [ 'ts', ...globSync('ts/**/*', { 'ignore': [ 'ts/**/*.mts', 'ts/**/*.ts', 'ts/**/*.tsx' ] }) ]
   files.forEach((srcPath) => {
     copyOneFile(srcPath)
   })
