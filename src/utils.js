@@ -1,4 +1,5 @@
 const { copyFileSync, mkdirSync, statSync } = require('fs')
+const { join, normalize, sep } = require('path')
 const { globSync } = require('glob')
 
 const SRC_DIR = 'ts'
@@ -12,7 +13,9 @@ function copyAllFiles () {
 }
 
 function copyOneFile (srcPath) {
-  const destPath = srcPath.replace(SRC_DIR, DEST_DIR)
+  const cwd = process.cwd()
+  const src = srcPath.startsWith(sep) ? normalize(srcPath) : join(cwd, srcPath)
+  const destPath = src.replace(join(cwd, SRC_DIR), join(cwd, DEST_DIR))
   const stats = statSync(srcPath)
   if (stats.isDirectory()) {
     mkdirSync(destPath, { recursive: true })
