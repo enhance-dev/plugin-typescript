@@ -1,17 +1,17 @@
-import { copyFileSync, mkdirSync, statSync } from 'fs'
-import { globSync } from 'glob'
+const { copyFileSync, mkdirSync, statSync } = require('fs')
+const { globSync } = require('glob')
 
 const SRC_DIR = 'ts'
 const DEST_DIR = 'app'
 
-function copyProject () {
-  const files = globSync('ts/**/*', { 'ignore': [ 'ts/**/*.mts', 'ts/**/*.ts', 'ts/**/*.tsx' ] })
+function copyAllFiles () {
+  const files = [ 'ts', ...globSync('ts/**/*', { 'ignore': [ 'ts/**/*.mts', 'ts/**/*.ts', 'ts/**/*.tsx' ] }) ]
   files.forEach((srcPath) => {
-    copyFile(srcPath)
+    copyOneFile(srcPath)
   })
 }
 
-function copyFile (srcPath) {
+function copyOneFile (srcPath) {
   const destPath = srcPath.replace(SRC_DIR, DEST_DIR)
   const stats = statSync(srcPath)
   if (stats.isDirectory()) {
@@ -22,4 +22,5 @@ function copyFile (srcPath) {
   }
 }
 
-export { copyProject, copyFile }
+exports.copyProject = copyAllFiles
+exports.copyFile = copyOneFile

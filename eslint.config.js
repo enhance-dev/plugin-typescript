@@ -1,6 +1,6 @@
-import arc from '@architect/eslint-config'
+const arc = require('@architect/eslint-config')
 
-const config = [
+module.exports = [
   ...arc,
   {
     ignores: [
@@ -12,10 +12,5 @@ const config = [
       'src/http/get-index',
       'types/',
     ],
-    languageOptions: {
-      sourceType: 'module',
-    },
   },
 ]
-
-export default config
