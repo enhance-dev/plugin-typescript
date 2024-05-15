@@ -1,6 +1,6 @@
 {
   "name": "@enhance/plugin-typescript",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "TypeScript workflow integration for Enhance",
   "main": "src/index.js",
   "type": "module",
