@@ -3,6 +3,7 @@
   "version": "0.1.2",
   "description": "TypeScript workflow integration for Enhance",
   "main": "src/index.js",
+  "type": "module",
   "scripts": {
     "lint": "eslint . --fix",
     "test": "npm run lint"

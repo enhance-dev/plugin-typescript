@@ -1,10 +1,10 @@
-const { spawn } = require('child_process')
+import { spawn } from 'child_process'
 
 /**
  * Spawns the TypeScript Compiler in watcher mode, for use during local development.
  * Returns the process handle.
  */
-exports.startWatcher = function startTypeScriptCompiler (inputPath, outputPath, options = {}) {
+function startWatcher (inputPath, outputPath, options = {}) {
   const { update } = options
   const watcherProcess = spawn(
     'npx',
@@ -22,3 +22,5 @@ exports.startWatcher = function startTypeScriptCompiler (inputPath, outputPath, 
   })
   return watcherProcess
 }
+
+export { startWatcher }
